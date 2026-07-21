@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trickle</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0e12;
+  --surface: #141720;
+  --surface2: #1b1e2b;
+  --border: #252836;
+  --border2: #2f3347;
+  --text: #e2e4ed;
+  --muted: #565c7a;
+  --accent: #6c8ef5;
+  --accent-dim: #151c3d;
+  --accent-glow: rgba(108,142,245,0.15);
+  --success: #3ecf8e;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --trickle: #6c8ef5;
+  --mono: 'Courier New', Courier, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --radius: 9px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1.25rem 5rem;
+}
+
+.app { width: 100%; max-width: 820px; }
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+.logo-icon {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: var(--accent-dim);
+  border: 0.5px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+.badge {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 5px;
+  padding: 3px 8px;
+  letter-spacing: 0.03em;
+}
+
+/* ── Localhost gate ── */
+#gate {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-left: 3px solid var(--warning);
+  border-radius: 14px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+#gate h2 { font-size: 15px; font-weight: 600; color: var(--warning); margin-bottom: 0.5rem; }
+#gate p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
+.cmd-block {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border: 0.5px solid var(--border2);
+  border-radius: var(--radius); padding: 10px 14px;
+  font-family: var(--mono); font-size: 13px; color: var(--accent);
+  margin-bottom: 1rem;
+}
+.cmd-block span { flex: 1; }
+.copy-cmd {
+  background: none; border: 0.5px solid var(--border2);
+  border-radius: 5px; color: var(--muted); font-size: 11px;
+  padding: 4px 10px; cursor: pointer; font-family: var(--sans);
+  transition: color 0.1s, border-color 0.1s;
+}
+.copy-cmd:hover { color: var(--text); border-color: #555; }
+.steps { list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 7px; }
+.steps li {
+  counter-increment: s; display: flex; gap: 10px;
+  align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.55;
+}
+.steps li::before {
+  content: counter(s);
+  background: var(--surface2); border: 0.5px solid var(--border2);
+  color: var(--warning); font-size: 11px; font-weight: 700;
+  min-width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.steps li a { color: var(--accent); }
+.steps li code {
+  background: var(--surface2); border-radius: 3px;
+  padding: 1px 5px; font-family: var(--mono);
+  font-size: 11px; color: var(--text);
+}
+
+/* ── Auth section ── */
+#auth-section {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+#auth-section .auth-logo { font-size: 32px; margin-bottom: 1rem; }
+#auth-section h2 { font-size: 17px; font-weight: 600; margin-bottom: 0.4rem; }
+#auth-section p { font-size: 13px; color: var(--muted); margin-bottom: 1.75rem; line-height: 1.65; max-width: 340px; margin-left: auto; margin-right: auto; }
+.g-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #fff; color: #1f1f1f; border: none;
+  border-radius: var(--radius); padding: 11px 24px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: var(--sans);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  transition: background 0.12s, box-shadow 0.12s;
+}
+.g-btn:hover { background: #f2f2f2; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.g-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ── Main UI ── */
+#main-ui { display: none; }
+
+.user-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 8px 12px;
+  margin-bottom: 1.5rem; font-size: 13px;
+}
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-dim); display: flex; align-items: center;
+  justify-content: center; font-size: 12px; font-weight: 700;
+  color: var(--accent); flex-shrink: 0; overflow: hidden;
+}
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-name { flex: 1; color: var(--text); }
+.sign-out {
+  background: none; border: none; color: var(--muted);
+  font-size: 12px; cursor: pointer; font-family: var(--sans);
+  padding: 4px 8px; border-radius: 4px; transition: background 0.1s;
+}
+.sign-out:hover { background: var(--surface2); color: var(--text); }
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-label {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+  margin-bottom: 10px; font-weight: 600;
+}
+
+/* ── Doc picker ── */
+.doc-search-row { display: flex; gap: 8px; }
+.doc-search-row input {
+  flex: 1; background: var(--surface2);
+  border: 0.5px solid var(--border); border-radius: var(--radius);
+  color: var(--text); font-family: var(--mono); font-size: 13px;
+  padding: 9px 12px;
+}
+.doc-search-row input:focus { outline: none; border-color: var(--accent); }
+.doc-search-row input::placeholder { color: var(--muted); }
+
+.doc-list {
+  margin-top: 10px; background: var(--surface2);
+  border: 0.5px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; display: none;
+}
+.doc-list-hdr {
+  padding: 7px 12px; font-size: 10px; color: var(--muted);
+  border-bottom: 0.5px solid var(--border);
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.doc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; cursor: pointer;
+  border-bottom: 0.5px solid var(--border);
+  transition: background 0.1s; font-size: 13px;
+}
+.doc-item:last-child { border-bottom: none; }
+.doc-item:hover { background: var(--border); }
+.doc-item.selected { background: var(--accent-dim); }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+.doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.doc-check { color: var(--accent); display: none; font-size: 13px; }
+.doc-item.selected .doc-check { display: block; }
+
+.selected-bar {
+  display: none; margin-top: 10px;
+  background: var(--accent-dim); border: 0.5px solid var(--accent);
+  border-radius: var(--radius); padding: 8px 12px;
+  font-size: 13px; color: var(--accent);
+  align-items: center; gap: 8px;
+}
+.selected-bar .clr {
+  margin-left: auto; background: none; border: none;
+  color: var(--accent); cursor: pointer; font-size: 18px; line-height: 1; padding: 0;
+}
+
+/* ── Insertion point ── */
+.insert-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.insert-row input[type=number] {
+  flex: 1; min-width: 120px;
+  background: var(--surface2); border: 0.5px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  font-family: var(--mono); font-size: 13px; padding: 8px 10px;
+}
+.insert-row input[type=number]:focus { outline: none; border-color: var(--accent); }
+.insert-row input[type=number]::placeholder { color: var(--muted); }
+
+#docStructureBox {
+  display: none; margin-top: 10px;
+  background: var(--bg); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 2; max-height: 210px; overflow-y: auto; color: var(--text);
+}
+
+/* ── Controls ── */
+.ctrl-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px 24px; }
+@media (max-width: 520px) { .ctrl-grid { grid-template-columns: 1fr; } }
+.ctrl { display: flex; flex-direction: column; gap: 6px; }
+.ctrl-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.ctrl-val { color: var(--accent); font-weight: 700; }
+input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+/* ── Text panels ── */
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 560px) { .panels { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 14px; }
+.panel-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+textarea {
+  width: 100%; height: 210px; resize: none;
+  background: var(--surface2); border: 0.5px solid var(--border);
+  border-radius: var(--radius); color: var(--text);
+  font-family: var(--mono); font-size: 13px; line-height: 1.7; padding: 10px 12px;
+}
+textarea::placeholder { color: var(--muted); }
+textarea:focus { outline: none; border-color: var(--accent); }
+
+.output-box {
+  min-height: 210px; max-height: 280px; overflow-y: auto;
+  background: var(--surface2); border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px;
+  font-family: var(--mono); font-size: 13px; line-height: 1.7;
+  color: var(--text); white-space: pre-wrap; word-break: break-word;
+}
+.cursor {
+  display: inline-block; width: 2px; height: 1.1em;
+  background: var(--accent); vertical-align: text-bottom;
+  margin-left: 1px; animation: blink 0.85s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── Progress ── */
+.progress-track {
+  height: 2px; background: var(--border);
+  border-radius: 2px; margin-bottom: 14px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 2px; width: 0%;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ── Buttons ── */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--sans); font-size: 13px; padding: 8px 16px;
+  border-radius: var(--radius); border: 0.5px solid var(--border2);
+  background: var(--surface); color: var(--text); cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: var(--surface2); border-color: #444; }
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+.btn.primary { background: var(--accent); color: #fff; border-color: transparent; font-weight: 500; }
+.btn.primary:hover:not(:disabled) { background: #5a7de3; }
+.btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+.btn.sm { font-size: 12px; padding: 6px 12px; color: var(--muted); }
+.btn.sm:hover:not(:disabled) { color: var(--text); }
+
+/* ── Status ── */
+.status-bar {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; color: var(--muted);
+}
+.pip {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted); flex-shrink: 0;
+}
+.pip.active { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+.pip.done { background: var(--success); }
+.pip.warn { background: var(--warning); }
+.pip.error { background: var(--danger); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">💧</div>
+      Trickle
+      <span class="logo-sub">for Google Docs</span>
+    </div>
+    <div class="badge">v1.0</div>
+  </div>
+
+  <!-- Localhost gate (shown only when opened as file://) -->
+  <div id="gate" style="display:none">
+    <h2>⚡ One quick step before sign-in</h2>
+    <p>Google OAuth requires the app to be served from a real URL — not a <code style="font-family:var(--mono);font-size:11px;background:var(--surface2);padding:1px 5px;border-radius:3px">file://</code> path. Run this one-liner in a terminal, then re-open from localhost:</p>
+    <div class="cmd-block">
+      <span id="serveCmd">python3 -m http.server 8765</span>
+      <button class="copy-cmd" onclick="copyCmd()">Copy</button>
+    </div>
+    <ol class="steps">
+      <li>Open a terminal in the folder where <code>trickle.html</code> is saved</li>
+      <li>Run the command above (Python 3 is pre-installed on Mac/Linux; on Windows use <code>py -m http.server 8765</code>)</li>
+      <li>Open <a href="http://localhost:8765/trickle.html" target="_blank"><strong>http://localhost:8765/trickle.html</strong></a></li>
+      <li>Make sure <code>http://localhost:8765</code> is listed as an <strong>Authorized JavaScript origin</strong> and <code>http://localhost:8765/trickle.html</code> is listed as an <strong>Authorized redirect URI</strong> in your Google Cloud OAuth client</li>
+    </ol>
+  </div>
+
+  <!-- Sign in -->
+  <div id="auth-section">
+    <div class="auth-logo">💧</div>
+    <h2>Sign in to start trickling</h2>
+    <p>Trickle needs access to your Google Docs so it can type into the document you choose. Nothing is stored or shared.</p>
+    <button class="g-btn" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Sign in with Google
+    </button>
+  </div>
+
+  <!-- Main app -->
+  <div id="main-ui">
+
+    <!-- User bar -->
+    <div class="user-bar">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <span class="user-name" id="userName">…</span>
+      <button class="sign-out" onclick="signOut()">Sign out</button>
+    </div>
+
+    <!-- Doc picker -->
+    <div class="card">
+      <div class="card-label">Target document</div>
+      <div class="doc-search-row">
+        <input type="text" id="docUrlInput" placeholder="Paste a Google Doc URL — or click Browse" oninput="handleDocUrl()">
+        <button class="btn" onclick="loadDocs()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Browse
+        </button>
+      </div>
+      <div class="doc-list" id="docList">
+        <div class="doc-list-hdr" id="docListHdr">Your recent docs</div>
+        <div id="docListItems"></div>
+      </div>
+      <div class="selected-bar" id="selectedBar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="selectedName">—</span>
+        <button class="clr" onclick="clearDoc()" title="Change doc">×</button>
+      </div>
+    </div>
+
+    <!-- Insertion point -->
+    <div class="card">
+      <div class="card-label">Insertion point</div>
+      <div class="insert-row">
+        <input type="number" id="insertIdxInput" min="1" placeholder="Leave blank to append at end of doc">
+        <button class="btn" onclick="fetchDocStructure()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Inspect doc
+        </button>
+        <button class="btn sm" onclick="document.getElementById('insertIdxInput').value=''">Reset to end</button>
+      </div>
+      <div id="docStructureBox"></div>
+    </div>
+
+    <!-- Typing controls -->
+    <div class="card">
+      <div class="card-label">Typing behavior</div>
+      <div class="ctrl-grid">
+        <div class="ctrl">
+          <div class="ctrl-head"><span>Speed</span><span class="ctrl-val" id="sV">6</span></div>
+          <input type="range" min="1" max="10" value="6" oninput="document.getElementById('sV').textContent=this.value">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><span>Error rate</span><span class="ctrl-val" id="eV">4</span></div>
+          <input type="range" min="0" max="10" value="4" oninput="document.getElementById('eV').textContent=this.value">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-head"><span>Hesitation</span><span class="ctrl-val" id="hV">5</span></div>
+          <input type="range" min="0" max="10" value="5" oninput="document.getElementById('hV').textContent=this.value">
+        </div>
+      </div>
+    </div>
+
+    <!-- Text panels -->
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-label">Source text</div>
+        <textarea id="srcText" placeholder="Paste the text you want to type here…"></textarea>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Live preview</div>
+        <div class="output-box" id="outputBox"><span class="cursor" id="typeCursor"></span></div>
+      </div>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+
+    <div class="btn-row">
+      <button class="btn primary" id="startBtn" onclick="startTyping()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Start
+      </button>
+      <button class="btn" id="pauseBtn" onclick="togglePause()" disabled>
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        Pause
+      </button>
+      <button class="btn" onclick="resetAll()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.99"/></svg>
+        Reset
+      </button>
+      <button class="btn" id="copyBtn" onclick="copyOutput()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy output
+      </button>
+    </div>
+
+    <div class="status-bar">
+      <div class="pip" id="pip"></div>
+      <span id="statusText">Ready — pick a doc and paste your text</span>
+    </div>
+
+  </div><!-- /main-ui -->
+</div><!-- /app -->
+
+<script>
+// ── Config (baked in) ─────────────────────────────────────────────────────────
+const CLIENT_ID = '5102067687-f0ilsv1bcnkfoj0a21h8fgsmp0g3kbgb.apps.googleusercontent.com';
+const SCOPES    = 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.profile';
+const FLUSH_EVERY = 6;
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let ACCESS_TOKEN  = sessionStorage.getItem('tk_token') || '';
+let selectedDocId   = '';
+let selectedDocName = '';
+let typedText   = '';
+let isRunning   = false;
+let isPaused    = false;
+let timeoutRef  = null;
+let pauseResolve = null;
+let pendingBuf  = '';
+let docInsertIdx = null;
+let charsWritten = 0;
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const onLocalhost = ['localhost','127.0.0.1'].includes(location.hostname);
+
+  // Grab token from OAuth redirect hash
+  const hash = new URLSearchParams(location.hash.replace('#',''));
+  const token = hash.get('access_token');
+  if (token) {
+    ACCESS_TOKEN = token;
+    sessionStorage.setItem('tk_token', token);
+    history.replaceState(null, '', location.pathname);
+  }
+
+  if (!onLocalhost) {
+    document.getElementById('gate').style.display = 'block';
+    return;
+  }
+
+  if (ACCESS_TOKEN) {
+    fetchUserAndShow();
+  } else {
+    document.getElementById('auth-section').style.display = 'block';
+  }
+});
+
+// ── OAuth ─────────────────────────────────────────────────────────────────────
+function signIn() {
+  const p = new URLSearchParams({
+    client_id:    CLIENT_ID,
+    redirect_uri: location.origin + location.pathname,
+    response_type:'token',
+    scope:        SCOPES,
+    include_granted_scopes: 'true',
+  });
+  location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + p;
+}
+
+function signOut() {
+  ACCESS_TOKEN = '';
+  sessionStorage.removeItem('tk_token');
+  document.getElementById('main-ui').style.display = 'none';
+  document.getElementById('auth-section').style.display = 'block';
+  resetAll();
+}
+
+async function fetchUserAndShow() {
+  try {
+    const u = await gFetch('https://www.googleapis.com/oauth2/v2/userinfo');
+    if (u.error) throw new Error(u.error.message);
+    document.getElementById('auth-section').style.display = 'none';
+    document.getElementById('main-ui').style.display = 'block';
+    const av = document.getElementById('userAvatar');
+    av.innerHTML = u.picture ? `<img src="${u.picture}" alt="">` : (u.name||'U')[0].toUpperCase();
+    document.getElementById('userName').textContent = u.name || u.email || 'Signed in';
+  } catch(e) {
+    ACCESS_TOKEN = '';
+    sessionStorage.removeItem('tk_token');
+    document.getElementById('auth-section').style.display = 'block';
+  }
+}
+
+// ── Doc picker ────────────────────────────────────────────────────────────────
+async function loadDocs() {
+  const list  = document.getElementById('docList');
+  const items = document.getElementById('docListItems');
+  list.style.display = 'block';
+  items.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted)">Loading your docs…</div>';
+  try {
+    const q = encodeURIComponent("mimeType='application/vnd.google-apps.document' and trashed=false");
+    const d = await gFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&pageSize=25&orderBy=modifiedTime+desc&fields=files(id,name,modifiedTime)`);
+    if (d.error) throw new Error(d.error.message);
+    const files = d.files || [];
+    document.getElementById('docListHdr').textContent = `Your Google Docs (${files.length} recent)`;
+    items.innerHTML = '';
+    if (!files.length) {
+      items.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted)">No docs found.</div>';
+      return;
+    }
+    files.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'doc-item' + (f.id === selectedDocId ? ' selected' : '');
+      const dt = new Date(f.modifiedTime);
+      el.innerHTML = `<span style="font-size:15px">📄</span>
+        <div class="doc-info">
+          <div class="doc-name">${esc(f.name)}</div>
+          <div class="doc-meta">Modified ${dt.toLocaleDateString()}</div>
+        </div>
+        <span class="doc-check">✓</span>`;
+      el.onclick = () => pickDoc(f.id, f.name, el);
+      items.appendChild(el);
+    });
+  } catch(e) {
+    items.innerHTML = `<div style="padding:12px;font-size:12px;color:var(--danger)">${esc(e.message)}</div>`;
+  }
+}
+
+function handleDocUrl() {
+  const m = document.getElementById('docUrlInput').value.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) pickDoc(m[1], 'Doc from URL');
+}
+
+function pickDoc(id, name, el) {
+  selectedDocId = id; selectedDocName = name;
+  document.querySelectorAll('.doc-item').forEach(e => e.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  const bar = document.getElementById('selectedBar');
+  bar.style.display = 'flex';
+  document.getElementById('selectedName').textContent = '📄 ' + name;
+  document.getElementById('docList').style.display = 'none';
+  setStatus('Doc selected: ' + name, '');
+}
+
+function clearDoc() {
+  selectedDocId = ''; selectedDocName = '';
+  document.getElementById('selectedBar').style.display = 'none';
+  document.getElementById('docStructureBox').style.display = 'none';
+  setStatus('Ready', '');
+}
+
+// ── Doc structure inspector ───────────────────────────────────────────────────
+async function fetchDocStructure() {
+  if (!selectedDocId) { alert('Select a doc first.'); return; }
+  const box = document.getElementById('docStructureBox');
+  box.style.display = 'block';
+  box.innerHTML = '<span style="color:var(--muted)">Fetching structure…</span>';
+  try {
+    const doc = await gFetch(`https://docs.googleapis.com/v1/documents/${selectedDocId}?fields=body.content`);
+    if (doc.error) throw new Error(doc.error.message);
+    const rows = [];
+    for (const el of (doc.body?.content || [])) {
+      if (!el.paragraph) continue;
+      const start = el.startIndex ?? '?';
+      const end   = el.endIndex   ?? '?';
+      let preview = '';
+      for (const run of (el.paragraph.elements || [])) preview += run.textRun?.content || '';
+      preview = preview.replace(/\n/g,'↵').slice(0, 64);
+      const style = el.paragraph.paragraphStyle?.namedStyleType || '';
+      const sLabel = style ? `<span style="color:var(--accent);margin-right:6px;font-size:10px">[${style}]</span>` : '';
+      rows.push(
+        `<div style="cursor:pointer;padding:3px 4px;border-radius:4px;transition:background 0.1s" `+
+        `onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background=''" `+
+        `onclick="setInsertIdx(${end})" title="Insert after this paragraph">`+
+        `<span style="color:var(--muted);min-width:64px;display:inline-block;font-size:11px">${start}–${end}</span> `+
+        sLabel +
+        `<span>${esc(preview)}</span>`+
+        `<span style="color:var(--success);margin-left:8px;font-size:10px">← use this</span></div>`
+      );
+    }
+    box.innerHTML = rows.length
+      ? `<div style="color:var(--muted);font-size:11px;margin-bottom:8px">Click a row to insert after that paragraph</div>` + rows.join('')
+      : '<span style="color:var(--muted)">No paragraphs found.</span>';
+  } catch(e) {
+    box.innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`;
+  }
+}
+
+function setInsertIdx(idx) {
+  document.getElementById('insertIdxInput').value = idx;
+  document.getElementById('docStructureBox').style.display = 'none';
+  setStatus('Insertion index set to ' + idx, '');
+}
+
+// ── Typing engine ─────────────────────────────────────────────────────────────
+const NEARBY = {a:'sqwz',b:'vghn',c:'xdfv',d:'serfcx',e:'wrsdf',f:'drtgv',g:'ftyhbv',
+  h:'gyujbn',i:'ujko',j:'huikm',k:'ijolm',l:'kop',m:'njk',n:'bhjm',o:'iklp',p:'ol',
+  q:'wa',r:'etdf',s:'awedxz',t:'ryfg',u:'yihj',v:'cfgb',w:'qase',x:'zsdc',y:'tghu',z:'asx'};
+
+function nearbyKey(c) {
+  const lc = c.toLowerCase(), opts = NEARBY[lc];
+  if (!opts) return c;
+  const k = opts[Math.floor(Math.random() * opts.length)];
+  return c === c.toUpperCase() ? k.toUpperCase() : k;
+}
+
+function getSpd() { return Math.max(15, 285 - parseInt(document.getElementById('sV').textContent) * 23); }
+function getErr() { return parseInt(document.getElementById('eV').textContent) / 100 * 0.12; }
+function getHes() { return parseInt(document.getElementById('hV').textContent) / 100 * 0.16; }
+function delay(ms) { return new Promise(r => { timeoutRef = setTimeout(r, ms); }); }
+async function checkPause() { if (isPaused) await new Promise(r => { pauseResolve = r; }); }
+
+function renderOutput() {
+  const box = document.getElementById('outputBox'), cur = document.getElementById('typeCursor');
+  box.innerHTML = '';
+  box.appendChild(document.createTextNode(typedText));
+  box.appendChild(cur);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function startTyping() {
+  const src = document.getElementById('srcText').value;
+  if (!src.trim()) { alert('Paste some text first.'); return; }
+  if (!selectedDocId) { alert('Pick a Google Doc first.'); return; }
+  if (isRunning) return;
+
+  typedText = ''; pendingBuf = ''; charsWritten = 0;
+  isRunning = true; isPaused = false;
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('pauseBtn').disabled = false;
+  document.getElementById('copyBtn').disabled  = true;
+  document.getElementById('typeCursor').style.display = '';
+  setStatus('Getting doc position…', 'active');
+
+  // Resolve insertion index
+  const manual = parseInt(document.getElementById('insertIdxInput').value);
+  if (!isNaN(manual) && manual >= 1) {
+    docInsertIdx = manual;
+    setStatus('Using index ' + manual, 'active');
+  } else {
+    docInsertIdx = await getDocEndIndex();
+    if (docInsertIdx === null) {
+      setStatus('Could not read doc — check permissions', 'error');
+      isRunning = false;
+      document.getElementById('startBtn').disabled = false;
+      return;
+    }
+  }
+
+  setStatus('Trickling into ' + selectedDocName + '…', 'active');
+  const chars = src.split('');
+
+  for (let i = 0; i < chars.length && isRunning; i++) {
+    await checkPause();
+    if (!isRunning) break;
+
+    const c = chars[i];
+    let wait = Math.max(12, getSpd() + (Math.random() - 0.5) * getSpd() * 0.7);
+
+    if (c === ' ' || c === '\n') wait *= 1.15 + Math.random() * 0.3;
+    if (c === '.' || c === '!' || c === '?') wait *= 2.2 + Math.random() * 1.5;
+    if (c === ',') wait *= 1.6 + Math.random();
+    if (c === '\n') wait *= 2.5 + Math.random();
+
+    if (Math.random() < getHes() && c !== ' ') await delay(wait * 3.5 + Math.random() * 320);
+
+    if (Math.random() < getErr() && c.match(/[a-zA-Z]/)) {
+      // Type wrong key
+      const wrong = nearbyKey(c);
+      typedText += wrong; pendingBuf += wrong; renderOutput();
+      await delay(wait);
+
+      // Backspace 1–2 chars
+      const backs = 1 + (Math.random() < 0.2 ? 1 : 0);
+      for (let b = 0; b < backs && typedText.length > 0; b++) {
+        typedText = typedText.slice(0, -1); renderOutput();
+        await deleteFromDoc(docInsertIdx + charsWritten + pendingBuf.length);
+        pendingBuf = pendingBuf.slice(0, -1);
+        await delay(wait * 0.6);
+      }
+
+      // Type correct key
+      typedText += c; pendingBuf += c; renderOutput();
+    } else {
+      typedText += c; pendingBuf += c; renderOutput();
+    }
+
+    if (pendingBuf.length >= FLUSH_EVERY) await flushBuffer();
+
+    document.getElementById('prog').style.width = ((i + 1) / chars.length * 100).toFixed(1) + '%';
+    await delay(wait);
+  }
+
+  if (pendingBuf.length > 0) await flushBuffer();
+
+  if (isRunning) {
+    document.getElementById('typeCursor').style.display = 'none';
+    setStatus('Done — trickled into "' + selectedDocName + '"', 'done');
+    document.getElementById('copyBtn').disabled = false;
+  }
+  isRunning = false;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+}
+
+async function flushBuffer() {
+  if (!pendingBuf) return;
+  const text = pendingBuf, insertAt = docInsertIdx + charsWritten;
+  pendingBuf = ''; charsWritten += text.length;
+  await appendToDoc(text, insertAt);
+}
+
+function togglePause() {
+  if (!isRunning) return;
+  isPaused = !isPaused;
+  const btn = document.getElementById('pauseBtn');
+  if (isPaused) {
+    clearTimeout(timeoutRef);
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><polygon points="5 3 19 12 5 21 5 3"/></svg> Resume`;
+    setStatus('Paused', 'warn');
+  } else {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause`;
+    setStatus('Trickling…', 'active');
+    if (pauseResolve) { pauseResolve(); pauseResolve = null; }
+  }
+}
+
+function resetAll() {
+  isRunning = false; isPaused = false; clearTimeout(timeoutRef);
+  typedText = ''; pendingBuf = ''; charsWritten = 0;
+  const box = document.getElementById('outputBox'), cur = document.getElementById('typeCursor');
+  box.innerHTML = ''; cur.style.display = ''; box.appendChild(cur);
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('copyBtn').disabled  = true;
+  setStatus('Reset — ready', '');
+}
+
+function copyOutput() {
+  navigator.clipboard.writeText(typedText).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    setTimeout(() => {
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy output`;
+    }, 2000);
+  });
+}
+
+// ── Google Docs API ───────────────────────────────────────────────────────────
+async function getDocEndIndex() {
+  try {
+    const doc = await gFetch(`https://docs.googleapis.com/v1/documents/${selectedDocId}?fields=body.content`);
+    if (doc.error) throw new Error(doc.error.message);
+    let endIdx = 1;
+    for (const el of (doc.body?.content || [])) { if (el.endIndex) endIdx = el.endIndex; }
+    return Math.max(1, endIdx - 1);
+  } catch(e) { console.error('getDocEndIndex', e); return null; }
+}
+
+async function appendToDoc(text, insertionIndex) {
+  if (!text) return;
+  try {
+    await gPost(`https://docs.googleapis.com/v1/documents/${selectedDocId}:batchUpdate`, {
+      requests: [{ insertText: { text, location: { index: insertionIndex } } }]
+    });
+  } catch(e) { console.warn('appendToDoc', e); }
+}
+
+async function deleteFromDoc(charIndex) {
+  if (!charIndex || charIndex < 1) return;
+  try {
+    await gPost(`https://docs.googleapis.com/v1/documents/${selectedDocId}:batchUpdate`, {
+      requests: [{ deleteContentRange: { range: { startIndex: charIndex - 1, endIndex: charIndex } } }]
+    });
+  } catch(e) { console.warn('deleteFromDoc', e); }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+async function gFetch(url) {
+  const r = await fetch(url, { headers: { Authorization: 'Bearer ' + ACCESS_TOKEN } });
+  return r.json();
+}
+async function gPost(url, body) {
+  return fetch(url, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + ACCESS_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+}
+function setStatus(t, s) {
+  document.getElementById('statusText').textContent = t;
+  document.getElementById('pip').className = 'pip' + (s ? ' ' + s : '');
+}
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function copyCmd() {
+  navigator.clipboard.writeText(document.getElementById('serveCmd').textContent)
+    .then(() => { const b = document.querySelector('.copy-cmd'); b.textContent = 'Copied!'; setTimeout(() => b.textContent = 'Copy', 2000); });
+}
+</script>
+</body>
+</html>
