@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Trickle</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0e12;
+  --surface: #141720;
+  --surface2: #1b1e2b;
+  --border: #252836;
+  --text: #e2e4ed;
+  --muted: #565c7a;
+  --accent: #6c8ef5;
+  --accent-dim: #151c3d;
+  --success: #3ecf8e;
+  --mono: 'Courier New', Courier, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --serif: Georgia, 'Times New Roman', serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  padding: 0;
+  line-height: 1.7;
+}
+
+/* Nav */
+.nav {
+  border-bottom: 0.5px solid var(--border);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  background: rgba(12,14,18,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; color: var(--text);
+  font-size: 16px; font-weight: 700; letter-spacing: -0.03em;
+}
+.nav-logo-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--accent-dim); border: 0.5px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.nav-sep { color: var(--border); margin: 0 4px; }
+.nav-page { font-size: 14px; color: var(--muted); }
+.nav-back {
+  margin-left: auto;
+  font-size: 13px; color: var(--muted);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  transition: color 0.15s;
+}
+.nav-back:hover { color: var(--text); }
+
+/* Hero */
+.hero {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 4rem 2rem 2rem;
+}
+.hero-eyebrow {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--accent);
+  margin-bottom: 1rem; font-weight: 600;
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+.hero-meta {
+  font-size: 13px; color: var(--muted);
+  display: flex; gap: 16px; flex-wrap: wrap;
+  padding-bottom: 2rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* TL;DR box */
+.tldr {
+  max-width: 680px;
+  margin: 2rem auto 0;
+  padding: 0 2rem;
+}
+.tldr-box {
+  background: var(--accent-dim);
+  border: 0.5px solid var(--accent);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+.tldr-label {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--accent);
+  font-weight: 700; margin-bottom: 10px;
+}
+.tldr-items {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.tldr-items li {
+  font-size: 13px; color: var(--text);
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
+}
+.tldr-items li::before {
+  content: '✓';
+  color: var(--success);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Content */
+.content {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+}
+
+.section { margin-bottom: 3rem; }
+
+.section-num {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted);
+  font-weight: 600; margin-bottom: 8px;
+  font-family: var(--mono);
+}
+
+.section h2 {
+  font-size: 18px; font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.section p {
+  font-size: 14px; color: #a8abbe;
+  line-height: 1.8; margin-bottom: 0.9rem;
+}
+.section p:last-child { margin-bottom: 0; }
+
+.section ul {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+  margin: 0.75rem 0;
+}
+.section ul li {
+  font-size: 14px; color: #a8abbe;
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.7;
+}
+.section ul li::before {
+  content: '—';
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.highlight {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.65;
+  margin: 1rem 0;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Footer */
+.footer {
+  border-top: 0.5px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.footer a { color: var(--muted); }
+.footer a:hover { color: var(--accent); text-decoration: none; }
+
+@media (max-width: 500px) {
+  .nav { padding: 0.75rem 1rem; }
+  .hero, .tldr, .content { padding-left: 1.25rem; padding-right: 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/">
+    <div class="nav-logo-icon">💧</div>
+    Trickle
+  </a>
+  <span class="nav-sep">/</span>
+  <span class="nav-page">Privacy Policy</span>
+  <a class="nav-back" href="/">
+    ← Back to app
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Legal</div>
+  <h1>Privacy Policy</h1>
+  <div class="hero-meta">
+    <span>Effective: July 21, 2026</span>
+    <span>Last updated: July 21, 2026</span>
+    <span>Krishay Panchal</span>
+  </div>
+</div>
+
+<div class="tldr">
+  <div class="tldr-box">
+    <div class="tldr-label">The short version</div>
+    <ul class="tldr-items">
+      <li>Trickle does not collect, store, or transmit any of your data.</li>
+      <li>Your text never leaves your browser — it goes directly to Google's servers.</li>
+      <li>No accounts, no databases, no analytics, no ads.</li>
+      <li>Your Google OAuth token is stored only in your browser's session memory and is gone when you close the tab.</li>
+      <li>Trickle is open source — you can verify every claim here by reading the code.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-num">01</div>
+    <h2>What Trickle is</h2>
+    <p>Trickle is a client-side web application that simulates human-like typing directly into a Google Doc you select. It is developed and maintained by Krishay Panchal as an open-source project.</p>
+    <p>Trickle runs entirely in your browser. There is no backend server, no database, and no server-side processing of any kind. All logic executes locally on your device.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">02</div>
+    <h2>Information we do not collect</h2>
+    <p>Trickle does not collect any personal information. Specifically, we never collect, process, or store:</p>
+    <ul>
+      <li>Your name, email address, or any other identifying information</li>
+      <li>The text you paste into the app</li>
+      <li>The content of your Google Docs</li>
+      <li>Your Google account credentials or OAuth tokens beyond your current browser session</li>
+      <li>Usage data, analytics, or behavioral telemetry</li>
+      <li>IP addresses, device identifiers, or location data</li>
+      <li>Cookies of any kind</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-num">03</div>
+    <h2>Google OAuth and your data</h2>
+    <p>To type into your Google Docs, Trickle asks Google for permission via OAuth 2.0. When you click "Sign in with Google," you are redirected to Google's own authentication page. Trickle never sees your Google password.</p>
+    <p>Google issues a temporary access token, which is stored only in your browser's <code style="font-family:var(--mono);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px">sessionStorage</code> — meaning it is automatically deleted when you close the tab. This token is used solely to make API calls to Google Docs and Google Drive on your behalf, directly from your browser.</p>
+    <div class="highlight">
+      Your text and your documents are transmitted directly from your browser to Google's servers. They pass through no Trickle infrastructure, because no Trickle infrastructure exists.
+    </div>
+    <p>The scopes Trickle requests are:</p>
+    <ul>
+      <li><strong>Google Docs (read/write)</strong> — to insert text into the document you select</li>
+      <li><strong>Google Drive (read-only)</strong> — to list your recent documents so you can pick one</li>
+      <li><strong>Profile (read-only)</strong> — to display your name and photo in the app UI</li>
+    </ul>
+    <p>You can revoke Trickle's access at any time at <a href="https://myaccount.google.com/permissions" target="_blank">myaccount.google.com/permissions</a>.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">04</div>
+    <h2>Open source</h2>
+    <p>Trickle is fully open source. The complete source code is publicly available on GitHub. Every claim in this privacy policy can be independently verified by reading the code — there is no hidden logic, no obfuscated requests, and no external services being called beyond Google's own APIs.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">05</div>
+    <h2>Third-party services</h2>
+    <p>Trickle interacts with the following Google services, each governed by Google's own privacy policy:</p>
+    <ul>
+      <li><a href="https://developers.google.com/docs/api" target="_blank">Google Docs API</a></li>
+      <li><a href="https://developers.google.com/drive" target="_blank">Google Drive API</a></li>
+      <li><a href="https://developers.google.com/identity" target="_blank">Google Identity Services</a></li>
+    </ul>
+    <p>Google's privacy policy is available at <a href="https://policies.google.com/privacy" target="_blank">policies.google.com/privacy</a>. Trickle has no affiliation with Google.</p>
+    <p>Trickle is hosted on GitHub Pages. GitHub may collect standard server access logs (IP address, browser type, referring URL) as described in <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">GitHub's privacy policy</a>. Trickle has no access to or control over this data.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">06</div>
+    <h2>Children's privacy</h2>
+    <p>Trickle is not directed at children under the age of 13 and does not knowingly collect any information from children. Because Trickle collects no information from anyone, this applies equally to all users.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">07</div>
+    <h2>Changes to this policy</h2>
+    <p>If this policy changes in a meaningful way, the "Last updated" date at the top of this page will be updated. Because Trickle collects no data, changes are unlikely to affect your privacy in any practical sense.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">08</div>
+    <h2>Contact</h2>
+    <p>If you have any questions about this privacy policy or how Trickle works, you can reach Krishay Panchal at <a href="https://krishaypanchal.me" target="_blank">krishaypanchal.me</a>.</p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div>💧 Trickle — open source, no data collected</div>
+  <div>Made by <a href="https://krishaypanchal.me" target="_blank">Krishay Panchal</a> · <a href="/">Back to app</a></div>
+</footer>
+
+</body>
+</html>
