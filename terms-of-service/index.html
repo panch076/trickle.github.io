@@ -2,213 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>Terms of Service — Trickle</title>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0c0e12;
-  --surface: #141720;
-  --surface2: #1b1e2b;
-  --border: #252836;
-  --text: #e2e4ed;
-  --muted: #565c7a;
-  --accent: #6c8ef5;
-  --accent-dim: #151c3d;
-  --success: #3ecf8e;
-  --mono: 'Courier New', Courier, monospace;
-  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --serif: Georgia, 'Times New Roman', serif;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-  padding: 0;
-  line-height: 1.7;
-}
-
-/* Nav */
-.nav {
-  border-bottom: 0.5px solid var(--border);
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  background: rgba(12,14,18,0.92);
-  backdrop-filter: blur(12px);
-  z-index: 10;
-}
-.nav-logo {
-  display: flex; align-items: center; gap: 10px;
-  text-decoration: none; color: var(--text);
-  font-size: 16px; font-weight: 700; letter-spacing: -0.03em;
-}
-.nav-logo-icon {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: var(--accent-dim); border: 0.5px solid var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-}
-.nav-sep { color: var(--border); margin: 0 4px; }
-.nav-page { font-size: 14px; color: var(--muted); }
-.nav-back {
-  margin-left: auto;
-  font-size: 13px; color: var(--muted);
-  text-decoration: none;
-  display: flex; align-items: center; gap: 6px;
-  transition: color 0.15s;
-}
-.nav-back:hover { color: var(--text); }
-
-/* Hero */
-.hero {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 4rem 2rem 2rem;
-}
-.hero-eyebrow {
-  font-size: 11px; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--accent);
-  margin-bottom: 1rem; font-weight: 600;
-}
-.hero h1 {
-  font-size: clamp(28px, 5vw, 40px);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1.15;
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-.hero-meta {
-  font-size: 13px; color: var(--muted);
-  display: flex; gap: 16px; flex-wrap: wrap;
-  padding-bottom: 2rem;
-  border-bottom: 0.5px solid var(--border);
-}
-.hero-meta span { display: flex; align-items: center; gap: 6px; }
-
-/* TL;DR box */
-.tldr {
-  max-width: 680px;
-  margin: 2rem auto 0;
-  padding: 0 2rem;
-}
-.tldr-box {
-  background: var(--accent-dim);
-  border: 0.5px solid var(--accent);
-  border-radius: 12px;
-  padding: 1.25rem 1.5rem;
-}
-.tldr-label {
-  font-size: 10px; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--accent);
-  font-weight: 700; margin-bottom: 10px;
-}
-.tldr-items {
-  list-style: none;
-  display: flex; flex-direction: column; gap: 7px;
-}
-.tldr-items li {
-  font-size: 13px; color: var(--text);
-  display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
-}
-.tldr-items li::before {
-  content: '✓';
-  color: var(--success);
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-/* Content */
-.content {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 3rem 2rem 6rem;
-}
-
-.section { margin-bottom: 3rem; }
-
-.section-num {
-  font-size: 10px; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--muted);
-  font-weight: 600; margin-bottom: 8px;
-  font-family: var(--mono);
-}
-
-.section h2 {
-  font-size: 18px; font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 0.5px solid var(--border);
-}
-
-.section p {
-  font-size: 14px; color: #a8abbe;
-  line-height: 1.8; margin-bottom: 0.9rem;
-}
-.section p:last-child { margin-bottom: 0; }
-
-.section ul {
-  list-style: none;
-  display: flex; flex-direction: column; gap: 6px;
-  margin: 0.75rem 0;
-}
-.section ul li {
-  font-size: 14px; color: #a8abbe;
-  display: flex; align-items: flex-start; gap: 10px; line-height: 1.7;
-}
-.section ul li::before {
-  content: '—';
-  color: var(--muted);
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.highlight {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 8px 8px 0;
-  padding: 12px 14px;
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.65;
-  margin: 1rem 0;
-}
-
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-/* Footer */
-.footer {
-  border-top: 0.5px solid var(--border);
-  padding: 2rem;
-  text-align: center;
-  font-size: 12px;
-  color: var(--muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.footer a { color: var(--muted); }
-.footer a:hover { color: var(--accent); text-decoration: none; }
-
-@media (max-width: 500px) {
-  .nav { padding: 0.75rem 1rem; }
-  .hero, .tldr, .content { padding-left: 1.25rem; padding-right: 1.25rem; }
-}
-</style>
+<link rel="stylesheet" href="/assets/legal.css">
 </head>
 <body>
 
@@ -268,7 +66,7 @@ a:hover { text-decoration: underline; }
     <p>You are solely responsible for how you use Trickle, including:</p>
     <ul>
       <li>Ensuring you have the right to edit any document you point Trickle at</li>
-      <li>Complying with Google's own <a href="https://policies.google.com/terms" target="_blank">Terms of Service</a> and API usage policies</li>
+      <li>Complying with Google's own <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> and API usage policies</li>
       <li>Complying with any rules, policies, or agreements that apply to you — academic, professional, or otherwise — regarding how documents in your possession may be created or edited</li>
       <li>Keeping your Google account and any active session secure</li>
     </ul>
@@ -295,8 +93,8 @@ a:hover { text-decoration: underline; }
     <h2>Third-party services</h2>
     <p>Trickle relies on Google's APIs (Docs, Drive, and Identity Services) to function, and is hosted on GitHub Pages. Your use of those underlying services is governed by their own respective terms:</p>
     <ul>
-      <li><a href="https://policies.google.com/terms" target="_blank">Google Terms of Service</a></li>
-      <li><a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service" target="_blank">GitHub Terms of Service</a></li>
+      <li><a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Google Terms of Service</a></li>
+      <li><a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service" target="_blank" rel="noopener noreferrer">GitHub Terms of Service</a></li>
     </ul>
     <p>Trickle has no affiliation with Google or GitHub, and is not responsible for their availability or behavior.</p>
   </div>
@@ -316,20 +114,20 @@ a:hover { text-decoration: underline; }
   <div class="section">
     <div class="section-num">09</div>
     <h2>Termination</h2>
-    <p>You may stop using Trickle at any time, including by revoking its access to your Google account at <a href="https://myaccount.google.com/permissions" target="_blank">myaccount.google.com/permissions</a>. Krishay Panchal reserves the right to discontinue the Service at any time, for any reason.</p>
+    <p>You may stop using Trickle at any time, including by revoking its access to your Google account at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>. Krishay Panchal reserves the right to discontinue the Service at any time, for any reason.</p>
   </div>
 
   <div class="section">
     <div class="section-num">10</div>
     <h2>Contact</h2>
-    <p>If you have any questions about these terms, you can reach Krishay Panchal at <a href="https://krishaypanchal.me" target="_blank">krishaypanchal.me</a>.</p>
+    <p>If you have any questions about these terms, you can reach Krishay Panchal at <a href="https://krishaypanchal.me" target="_blank" rel="noopener noreferrer">krishaypanchal.me</a>.</p>
   </div>
 
 </div>
 
 <footer class="footer">
   <div>💧 Trickle — open source, no data collected</div>
-  <div><a href="/privacy-policy/">Privacy Policy</a> · Made by <a href="https://krishaypanchal.me" target="_blank">Krishay Panchal</a> · <a href="/">Back to app</a> · <a href="https://github.com/panch076/trickle.github.io" target="_blank" rel="noopener">GitHub</a></div>
+  <div><a href="/privacy-policy/">Privacy Policy</a> · Made by <a href="https://krishaypanchal.me" target="_blank" rel="noopener noreferrer">Krishay Panchal</a> · <a href="/">Back to app</a> · <a href="https://github.com/panch076/trickle.github.io" target="_blank" rel="noopener noreferrer" rel="noopener">GitHub</a></div>
 </footer>
 
 </body>
